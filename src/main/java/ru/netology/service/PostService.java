@@ -2,10 +2,12 @@ package ru.netology.service;
 
 import org.springframework.stereotype.Service;
 import ru.netology.exception.NotFoundException;
-import ru.netology.model.Post;
+import ru.netology.model.PostDTO;
 import ru.netology.repository.PostRepository;
+import ru.netology.utils.MappingUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -15,16 +17,29 @@ public class PostService {
         this.repository = repository;
     }
 
-    public List<Post> all() {
-        return repository.all();
+    public List<PostDTO> all() {
+        return repository.all().stream().filter(p -> !p.isRemove())
+                .map(MappingUtils::mapToPostDTO).collect(Collectors.toList());
     }
 
-    public Post getById(long id) {
-        return repository.getById(id).orElseThrow(NotFoundException::new);
+    public PostDTO getById(long id) {
+        var post = repository.getById(id).filter(p->!p.isRemove()).orElseThrow(NotFoundException::new);
+        return MappingUtils.mapToPostDTO(post);
     }
 
-    public Post save(Post post) {
-        return repository.save(post);
+    public PostDTO save(PostDTO postDTO) {
+        var post = repository.getById(postDTO.getId());
+        if(post.isPresent()){
+            if(!post.get().isRemove()){
+                post.get().setContent(postDTO.getContent());
+                return MappingUtils.mapToPostDTO(repository.save(post.get()));
+            } else {
+                throw new NotFoundException("this post was deleted");
+            }
+        } else {
+            return MappingUtils.mapToPostDTO(repository.save(MappingUtils.mapToPost(postDTO)));
+        }
+
     }
 
 

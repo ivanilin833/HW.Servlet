@@ -52,6 +52,6 @@ public class PostRepository {
 
     public void removeById(long id) {
         var post = getById(id);
-        post.ifPresent(post1 -> posts.remove(post1.getId()));
+        post.ifPresent(post1 -> post1.setRemove(true));
     }
 }
