@@ -1,17 +1,12 @@
 package ru.netology.model;
 
-public class Post {
+public class PostDTO {
     private long id;
     private String content;
-    private boolean isRemove;
 
-    public Post() {
-    }
-
-    public Post(long id, String content) {
+    public PostDTO(long id, String content) {
         this.id = id;
         this.content = content;
-        isRemove = false;
     }
 
     public long getId() {
@@ -28,13 +23,5 @@ public class Post {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public boolean isRemove() {
-        return isRemove;
-    }
-
-    public void setRemove(boolean remove) {
-        isRemove = remove;
     }
 }
